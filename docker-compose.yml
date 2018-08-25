@@ -1,0 +1,33 @@
+version: '3.1'
+
+services:
+  wordpress:
+    image: wordpress
+    env_file: .env
+    hostname: ${HOSTNAME}
+    restart: always
+    ports:
+      - "8080:80"
+    depends_on:
+      - mysql
+    links:
+      - mysql
+    volumes:
+      - ./docker/wordpress/wp-content:/var/www/html/wp-content
+    networks:
+      - default
+      - ssl_proxy
+
+  mysql:
+    image: mysql:5.7
+    restart: always
+    volumes:
+    - ./docker/wordpress/mysql:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${WORDPRESS_DB_PASSWORD}
+    networks:
+      - default
+
+networks:
+  ssl_proxy:
+    external: true
